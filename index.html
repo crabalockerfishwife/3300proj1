@@ -1,0 +1,44 @@
+<html>
+<head>
+	<p>Comparing U.S. Universities</p>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<body>
+<svg height="400" width="400"></svg>
+
+<script>
+var svg = d3.select("svg");
+
+d3.json("schoolinfo.json", function (error, data) {
+  rawData = data;
+  
+  console.log("RawData:");
+  console.log(rawData);
+
+  cleanedData = [];
+
+  for (i = 0; i < rawData.length; i++) {
+  	cleanedData.push([]);
+  }
+
+  desiredAttributes = ["displayName", "tuition", "sat-avg", "acceptance-rate", "institutionalControl"];
+
+  for (i = 0; i < rawData.length; i++) { 
+  	for (j = 0; j < desiredAttributes.length; j++) {
+  		cleanedData[i].push(rawData[i][desiredAttributes[j]]);
+  		
+	}
+   }
+
+   console.log("cleanedData:");
+   console.log(cleanedData);
+
+   /* Issues remained with cleanedData: negative acceptance rates, null sat-avg, null acceptance rate, negative overallRank */
+
+
+
+});
+</script>
+
+</body>
+</html>
