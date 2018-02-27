@@ -1,6 +1,12 @@
+<!DOCTYPE html>
 <html>
 <head>
+<<<<<<< HEAD
   <title>Comparing U.S. Universities</title>
+=======
+	<meta charset="utf-8">
+	<title>Comparing U.S. Universities</title>
+>>>>>>> eeb9ffcbb7f0a3d3ff7bae5eb6c0b94cfe526690
 	<script src="https://d3js.org/d3.v4.min.js"></script>
   <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
 </head>
@@ -9,10 +15,10 @@
 
 <script>
 var svg = d3.select("svg");
-
+var rawData;
 d3.json("schoolinfo.json", function (error, data) {
-  rawData = data;
-  
+	rawData = data;
+
   console.log("RawData:");
   console.log(rawData);
 
@@ -22,10 +28,10 @@ d3.json("schoolinfo.json", function (error, data) {
     if (rawData[i]["displayName"]!=null && rawData[i]["tuition"]!=null && rawData[i]["sat-avg"]!=null && rawData[i]["sat-avg"]!=null && rawData[i]["acceptance-rate"]!=null && rawData[i]["acceptance-rate"]!=null) {
        cleanedData.push({"name": rawData[i]["displayName"], "tuition": rawData[i]["tuition"], "sat": rawData[i]["sat-avg"], "act": rawData[i]["act-avg"], "accept": rawData[i]["acceptance-rate"], "type": rawData[i]["institutionalControl"]});
     }
-   }
+  }
 
-   console.log("cleanedData:");
-   console.log(cleanedData);
+  console.log("cleanedData:");
+  console.log(cleanedData);
 
   var myXScale = d3.scaleLinear()
   .domain([700, 1500])
