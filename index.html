@@ -1,10 +1,11 @@
 <html>
 <head>
-	<p>Comparing U.S. Universities</p>
+  <title>Comparing U.S. Universities</title>
 	<script src="https://d3js.org/d3.v4.min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
 </head>
 <body>
-<svg height="400" width="400"></svg>
+<svg height="620" width="1000" style="border: 1px solid black;"></svg>
 
 <script>
 var svg = d3.select("svg");
@@ -18,27 +19,84 @@ d3.json("schoolinfo.json", function (error, data) {
   cleanedData = [];
 
   for (i = 0; i < rawData.length; i++) {
-  	cleanedData.push([]);
-  }
-
-  desiredAttributes = ["displayName", "tuition", "sat-avg", "acceptance-rate", "institutionalControl"];
-
-  for (i = 0; i < rawData.length; i++) { 
-  	for (j = 0; j < desiredAttributes.length; j++) {
-  		cleanedData[i].push(rawData[i][desiredAttributes[j]]);
-  		
-	}
+    if (rawData[i]["displayName"]!=null && rawData[i]["tuition"]!=null && rawData[i]["sat-avg"]!=null && rawData[i]["sat-avg"]!=null && rawData[i]["acceptance-rate"]!=null && rawData[i]["acceptance-rate"]!=null) {
+       cleanedData.push({"name": rawData[i]["displayName"], "tuition": rawData[i]["tuition"], "sat": rawData[i]["sat-avg"], "act": rawData[i]["act-avg"], "accept": rawData[i]["acceptance-rate"], "type": rawData[i]["institutionalControl"]});
+    }
    }
 
    console.log("cleanedData:");
    console.log(cleanedData);
 
-   /* Issues remained with cleanedData: negative acceptance rates, null sat-avg, null acceptance rate, negative overallRank */
+  var myXScale = d3.scaleLinear()
+  .domain([700, 1500])
+  .range([100, 800]);
 
+  var myYScale = d3.scaleLinear()
+  .domain([0, 100])
+  .range([600, 50]);
 
+  var myRadScale = d3.scaleLinear()
+  .domain([10000, 60000])
+  .range([3, 15]);
+
+  var myTypeScale = d3.scaleOrdinal()
+  .domain(["private", "public", "proprietary"])
+  .range(["blue", "red", "yellow"]);
+
+  var xAxis = d3.axisTop(myXScale);
+  var yAxis = d3.axisLeft(myYScale);
+
+  svg.append("g").call(xAxis).style("stroke-width", "1")
+  .attr("transform", "translate(0,50)");
+
+  svg.append("g").call(yAxis).style("stroke-width", "1")
+  .attr("transform", "translate(100,0)");
+
+  for (i = 0; i < cleanedData.length; i++) {
+    if (cleanedData[i]["act"]>=26) {
+      svg.append("circle")
+        .attr("cx", myXScale(cleanedData[i]["sat"]))
+        .attr("cy", myYScale(cleanedData[i]["accept"]))
+        .attr("r", myRadScale(cleanedData[i]["tuition"]))
+        .attr("fill", myTypeScale(cleanedData[i]["type"]))
+        .attr("opacity", .6);
+    } else {
+      svg.append("rect")
+        .attr("x", myXScale(cleanedData[i]["sat"]))
+        .attr("y", myYScale(cleanedData[i]["accept"]))
+        .attr("width", 2*myRadScale(cleanedData[i]["tuition"]))
+        .attr("height", 2*myRadScale(cleanedData[i]["tuition"]))
+        .attr("fill", myTypeScale(cleanedData[i]["type"]))
+        .attr("opacity", .6);
+    }
+  }
+
+  svg.append('text')
+  .attr("x", 520)
+  .attr("y", 120)
+  .attr("font-size", "36px")
+  .text('Comparing U.S. Universities');
+
+  svg.append('text')
+  .attr("x", 20)
+  .attr("y", 300)
+  .attr("font-size", "18px")
+  .attr("transform", "rotate(-90 80, 320)")
+  .text('Acceptance Rate');
+
+  svg.append('text')
+  .attr("x", 335)
+  .attr("y", 25)
+  .attr("font-size", "18px")
+  .text('Average SAT Score of Admits');
 
 });
 </script>
 
+<style>
+body {
+  font-family: 'Lato', sans-serif;;
+}
+</style>
 </body>
 </html>
