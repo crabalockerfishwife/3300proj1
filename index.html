@@ -3,12 +3,13 @@
 <head>
   <title>Comparing U.S. Universities</title>
 	<meta charset="utf-8">
-	<title>Comparing U.S. Universities</title>
 	<script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.5/d3-legend.js"></script>
   <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
 </head>
 <body>
-<svg height="620" width="1000" style="border: 1px solid black;"></svg>
+  <h1>Comparing U.S. Universities</h1>
+  <svg height="620" width="1000" style="border: 1px solid black;"></svg>
 
 <script>
 var svg = d3.select("svg");
@@ -74,18 +75,18 @@ d3.json("schoolinfo.json", function (error, data) {
     }
   }
 
-  svg.append('text')
-  .attr("x", 520)
-  .attr("y", 120)
-  .attr("font-size", "36px")
-  .text('Comparing U.S. Universities');
+  // svg.append('text')
+  // .attr("x", 520)
+  // .attr("y", 120)
+  // .attr("font-size", "36px")
+  // .text('Comparing U.S. Universities');
 
   svg.append('text')
   .attr("x", 20)
   .attr("y", 300)
   .attr("font-size", "18px")
   .attr("transform", "rotate(-90 80, 320)")
-  .text('Acceptance Rate');
+  .text('Acceptance Rate (%)');
 
   svg.append('text')
   .attr("x", 335)
@@ -93,12 +94,74 @@ d3.json("schoolinfo.json", function (error, data) {
   .attr("font-size", "18px")
   .text('Average SAT Score of Admits');
 
+  //legend
+  //Source : http://d3-legend.susielu.com/
+  // Type of school
+  var ordinal = d3.scaleOrdinal()
+    .domain(["Private", "Public", "Proprietary"])
+    .range([ "rgba(0, 0, 255, 0.6)", "rgba(255, 0, 0, 0.6)", "rgba(255, 255, 0, 0.6)"]);
+
+  svg.append("g")
+    .attr("class", "legendOrdinal")
+    .attr("transform", "translate(850,100)");
+
+  var legendOrdinal = d3.legendColor()
+    .shape("rect")
+    .shapePadding(10)
+    .cellFilter(function(d){ return d.label !== "e" })
+    .scale(ordinal);
+
+  svg.select(".legendOrdinal")
+    .call(legendOrdinal);
+
+  //Tuition
+  svg.append("g")
+    .attr("class", "legendSize")
+    .attr("transform", "translate(730, 210)");
+
+  var legendSize = d3.legendSize()
+    .scale(myRadScale)
+    .shape('circle')
+    .shapePadding(55)
+    .labelOffset(15)
+    .title("Annual Tuition in USD")
+    .orient('horizontal');
+
+  svg.select(".legendSize")
+    .call(legendSize);
+
+  //ACT Score
+  var rect = d3.symbol().type(d3.symbolSquare)();
+  var circle = d3.symbol().type(d3.symbolCircle)();
+
+  var symbolScale =  d3.scaleOrdinal()
+    .domain(["ACT score < 26", "ACT score >= 26"])
+    .range([rect, circle]);
+
+  svg.append("g")
+    .attr("class", "legendSymbol")
+    .attr("transform", "translate(850, 310)");
+
+  var legendPath = d3.legendSymbol()
+    .scale(symbolScale)
+    .orient("vertical");
+
+  svg.select(".legendSymbol")
+    .call(legendPath);
+
 });
 </script>
 
 <style>
 body {
   font-family: 'Lato', sans-serif;;
+}
+h1 {
+  text-align: center;
+}
+svg {
+  display: block;
+  margin: auto;
 }
 </style>
 </body>
