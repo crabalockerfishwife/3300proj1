@@ -18,8 +18,9 @@ var rawData;
 d3.json("schoolinfo.json", function (error, data) {
 	rawData = data;
 
-  console.log("RawData:");
-  console.log(rawData);
+  // Log the original data
+  //console.log("RawData:");
+  //console.log(rawData);
 
   cleanedData = [];
 
@@ -27,20 +28,21 @@ d3.json("schoolinfo.json", function (error, data) {
     if (rawData[i]["displayName"]!=null && rawData[i]["tuition"]!=null && rawData[i]["sat-avg"]!=null && rawData[i]["sat-avg"]!=null && rawData[i]["acceptance-rate"]!=null && rawData[i]["acceptance-rate"]!=null) {
        cleanedData.push({"name": rawData[i]["displayName"], "tuition": rawData[i]["tuition"], "sat": rawData[i]["sat-avg"], "act": rawData[i]["act-avg"], "accept": rawData[i]["acceptance-rate"], "type": rawData[i]["institutionalControl"]});
     }
-  }
+  } // Disclaimer: we were original interested in both SAT and ACT score. For the final version, we are only considering SAT score
 
-  console.log("cleanedData:");
-  console.log(cleanedData);
+  // Log the data for the 5 variables we're interested in; with null-valued entries filtered out
+  //console.log("cleanedData:");
+  //console.log(cleanedData);
 
-  var myXScale = d3.scaleLinear()
+  var myXScale = d3.scaleLinear() // Establish the linear scale for the x-axis (Average SAT Score)
   .domain([700, 1500])
   .range([100, 800]);
 
-  var myYScale = d3.scaleLinear()
+  var myYScale = d3.scaleLinear() // Establish the linear scale for the y-axis (Acceptance Rate)
   .domain([0, 100])
   .range([50, 600]);
 
-  var myRadScale = d3.scaleSqrt()
+  var myRadScale = d3.scaleSqrt() // Establish the sqrt scale for the size of the circles (Tuition)
   .domain([5000, 60000])
   .range([4, 15]);
 
@@ -54,26 +56,27 @@ d3.json("schoolinfo.json", function (error, data) {
   var yyy = 80
   console.log(testscale(yyy))
 
-  var myTypeScale = d3.scaleOrdinal()
+
+  var myTypeScale = d3.scaleOrdinal() // Establish the ordinal scale for private (red) and public (blue)
   .domain(["private", "public"])
   .range(["#D9224E", "#47B1B8"]);
 
-  var xAxis = d3.axisTop(myXScale);
-  var yAxis = d3.axisLeft(myYScale);
+  var xAxis = d3.axisTop(myXScale); // Set up the x-axis using the scale we defined
+  var yAxis = d3.axisLeft(myYScale); // Set up the y-axis using the scale we defined
 
   svg.append("g").call(xAxis).style("stroke-width", "3").attr("opacity", ".5")
-  .attr("transform", "translate(0,50)");
+  .attr("transform", "translate(0,50)"); // Reposition the x-axis and change its styling
 
   svg.append("g").call(yAxis).style("stroke-width", "3").attr("opacity", ".5")
-  .attr("transform", "translate(100,0)");
+  .attr("transform", "translate(100,0)"); // Reposition the y-axis and change its styling
 
 
 var min = 0;
 var max = 0
-  for (i = 0; i < cleanedData.length; i++) {
+  for (i = 0; i < cleanedData.length; i++) { // For each university in the cleaned dataset
       
-      if(cleanedData[i]["name"]=="Columbia University"){
-        console.log("found")
+      if(cleanedData[i]["name"]=="Columbia University"){ // If the university is Columnia, make a circle element for it
+        //console.log("found") //was for testing purposes
         svg.append("circle")
         .attr("cx", myXScale(cleanedData[i]["sat"]))
         .attr("cy", myYScale(cleanedData[i]["accept"]))
@@ -84,14 +87,16 @@ var max = 0
 
 
       }
-      else{
+      else{ // Create circle elements for all other universities
         svg.append("circle")
           .attr("cx", myXScale(cleanedData[i]["sat"]))
           .attr("cy", myYScale(cleanedData[i]["accept"]))
           .attr("r", myRadScale(cleanedData[i]["tuition"]))
           .attr("fill", myTypeScale(cleanedData[i]["type"]))
           .attr("opacity", .6)
-          .on("click", function(){console.log(cleanedData[i]);});
+          .on("click", function(){
+            //console.log(cleanedData[i]);
+          }); //was for testing purposes
       }
       if(cleanedData[i]["tuition"] > cleanedData[max]["tuition"]){
         max = i;
@@ -101,8 +106,9 @@ var max = 0
       }
   }
 
-console.log(cleanedData[min]);
-console.log(cleanedData[max]);
+//was for testing purposes
+//console.log(cleanedData[min]);
+//console.log(cleanedData[max]);
 
 
   // svg.append('text')
@@ -111,6 +117,7 @@ console.log(cleanedData[max]);
   // .attr("font-size", "36px")
   // .text('Comparing U.S. Universities');
 
+  // Append the y-axis label
   svg.append('text')
   .attr("x", 10)
   .attr("y", 300)
@@ -118,17 +125,20 @@ console.log(cleanedData[max]);
   .attr("transform", "rotate(-90 80, 320)")
   .text('Acceptance Rate (%)');
 
+  // Append the x-axis label
   svg.append('text')
   .attr("x", 390)
   .attr("y", 25)
   .attr("font-size", "18px")
   .text('Average SAT Score of Admits');
 
-  //legend
-  //Source : http://d3-legend.susielu.com/
-  // Type of school
-  var ordinal = d3.scaleOrdinal()
-    .domain(["Private", "Public"])
+
+  // Set up the Legend
+  // Source : http://d3-legend.susielu.com/
+
+  // Set up the legend for type of school
+  var ordinal = d3.scaleOrdinal() // Establish the ordinal scale for private (red) and public (blue)
+    .domain(["Private", "Public"]) // Same as previous ordinal scale, except this scale maps capitalized words to colors
     .range([ "rgba(217, 34, 78, 0.6)", "rgba(71, 177, 184, 0.6)"]);
 
   svg.append("g")
@@ -144,7 +154,7 @@ console.log(cleanedData[max]);
   svg.select(".legendOrdinal")
     .call(legendOrdinal);
 
-  //Tuition
+  // Set up the legend for tuition of school
   svg.append("g")
     .attr("class", "legendSize")
     .attr("transform", "translate(850, 510)");
@@ -161,8 +171,6 @@ console.log(cleanedData[max]);
 
   svg.select(".legendSize")
     .call(legendSize);
-
-  //ACT Score
 
 
 });
